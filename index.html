@@ -28,6 +28,7 @@
                 try {
                     const resource = JSON.parse(event.target.result);
                     const textDiv = resource.text?.div;
+                    output.innerHTML = `<strong>Tipo de Recurso:</strong> ${resource.resourceType}`;
                     if (textDiv) {
                         output.innerHTML = textDiv;
                     } else if (resource.resourceType === "Patient") {
