@@ -88,7 +88,7 @@
         reader.readAsText(fileInput.files[0]);
     }
 
-    function generateIndentedContent(resource, indent = "") {
+    function generateIndentedContent(resource, indent = "    ") {
         let content = "";
         for (const [key, value] of Object.entries(resource)) {
             if (value && typeof value !== 'object') {
