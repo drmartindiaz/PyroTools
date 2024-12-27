@@ -4,14 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visor de recursos FHIR (FHIR Resource Viewer)</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            background: #ffffff; /* White background */
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        h1, h3 {
+            text-align: center;
+            color: #007bff; /* Bootstrap primary color */
+        }
+        .output-container {
+            background: #f1f1f1; /* Light gray for output */
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto; /* Scroll for large content */
+        }
+        .btn-primary {
+            width: 100%; /* Full-width button */
+            margin-top: 10px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Visor de recursos FHIR </h1>
-    <h3>(FHIR Resource Viewer)</h3>
-    <p>Cargue su recurso FHIR (formato JSON) para ver la narrativa legible por humanos.</p>
-    <input type="file" id="fileInput" accept=".json">
-    <button onclick="renderFHIR()">Render</button>
-    <pre id="output"></pre>
+    <div class="container">
+        <h1>Visor de recursos FHIR</h1>
+        <h3>(FHIR Resource Viewer)</h3>
+        <p>Cargue su recurso FHIR (formato JSON) para ver la narrativa legible por humanos.</p>
+        <input type="file" id="fileInput" class="form-control" accept=".json">
+        <button class="btn btn-primary" onclick="renderFHIR()">Render</button>
+        <div id="output" class="output-container"></div>
+    </div>
+    <footer>
+        &copy; 2024 Visor de recursos FHIR. Todos los derechos reservados.
+    </footer>
 
     <script>
         function renderFHIR() {
@@ -19,7 +63,7 @@
             const output = document.getElementById('output');
 
             if (fileInput.files.length === 0) {
-                output.textContent = "Por favor cargue un recurso FHIR en formato JSON.";
+                output.innerHTML = "<strong>Por favor cargue un recurso FHIR en formato JSON.</strong>";
                 return;
             }
 
@@ -28,18 +72,21 @@
                 try {
                     const resource = JSON.parse(event.target.result);
                     const resourceType = resource.resourceType || "Tipo de recurso desconocido";
-                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br>`;
+                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br><br>`;
+
                     const textDiv = resource.text?.div;
                     if (textDiv) {
-                        output.innerHTML = textDiv;
+                        displayContent += textDiv;
                     } else if (resource.resourceType === "Patient") {
                         const patientName = resource.name?.[0]?.text || "Nombre no disponible";
-                        output.innerHTML = `<strong>Nombre:</strong> ${patientName}`;
+                        displayContent += `<strong>Nombre:</strong> ${patientName}`;
                     } else {
-                        output.textContent = "No se encontró narrativa legible por humanos.";
+                        displayContent += "No se encontró narrativa legible por humanos y no es un recurso de tipo Paciente.";
                     }
+
+                    output.innerHTML = displayContent;
                 } catch (error) {
-                    output.textContent = "Archivo FHIR inválido.";
+                    output.innerHTML = "<strong>Archivo FHIR inválido.</strong>";
                 }
             };
             reader.readAsText(fileInput.files[0]);
