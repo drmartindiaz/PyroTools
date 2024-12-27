@@ -30,11 +30,14 @@
                     const textDiv = resource.text?.div;
                     if (textDiv) {
                         output.innerHTML = textDiv;
+                    } else if (resource.resourceType === "Patient") {
+                        const patientName = resource.name?.[0]?.text || "Nombre no disponible";
+                        output.innerHTML = `<strong>Nombre:</strong> ${patientName}`;
                     } else {
                         output.textContent = "No se encontró narrativa legible por humanos.";
                     }
                 } catch (error) {
-                    output.textContent = "Archivo FHRI inválido.";
+                    output.textContent = "Archivo FHIR inválido.";
                 }
             };
             reader.readAsText(fileInput.files[0]);
