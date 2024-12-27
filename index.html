@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FHIR Resource Viewer</title>
+    <title>Visor de recursos FHIR (FHIR Resource Viewer)</title>
 </head>
 <body>
-    <h1>FHIR Resource Viewer</h1>
-    <p>Upload your FHIR resource (JSON format) to view the human-readable narrative.</p>
+    <h1>Visor de recursos FHIR </h1>
+    <h3>(FHIR Resource Viewer)</h3>
+    <p>Cargue su recurso FHIR (formato JSON) para ver la narrativa legible por humanos.</p>
     <input type="file" id="fileInput" accept=".json">
     <button onclick="renderFHIR()">Render</button>
     <pre id="output"></pre>
@@ -18,7 +19,7 @@
             const output = document.getElementById('output');
 
             if (fileInput.files.length === 0) {
-                output.textContent = "Please upload a FHIR resource file.";
+                output.textContent = "Por favor cargue un recurso FHIR en formato JSON.";
                 return;
             }
 
@@ -30,10 +31,10 @@
                     if (textDiv) {
                         output.innerHTML = textDiv;
                     } else {
-                        output.textContent = "No human-readable narrative found.";
+                        output.textContent = "No se encontró narrativa legible por humanos.";
                     }
                 } catch (error) {
-                    output.textContent = "Invalid FHIR resource file.";
+                    output.textContent = "Archivo FHRI inválido.";
                 }
             };
             reader.readAsText(fileInput.files[0]);
