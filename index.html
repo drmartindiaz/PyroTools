@@ -56,51 +56,55 @@
         &copy; 2024 Visor de recursos FHIR. Todos los derechos reservados.
     </footer>
 
-    <script>
-        function renderFHIR() {
-            const fileInput = document.getElementById('fileInput');
-            const output = document.getElementById('output');
+<script>
+    function renderFHIR() {
+        const fileInput = document.getElementById('fileInput');
+        const output = document.getElementById('output');
 
-            if (fileInput.files.length === 0) {
-                output.innerHTML = "<strong>Por favor cargue un recurso FHIR en formato JSON.</strong>";
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const resource = JSON.parse(event.target.result);
-                    const resourceType = resource.resourceType || "Tipo de recurso desconocido";
-                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br><br>`;
-
-                    const textDiv = resource.text?.div;
-                    if (textDiv) {
-                        displayContent += textDiv;
-                    } else {
-                        displayContent += generateHumanReadableContent(resource);
-                    }
-
-                    output.innerHTML = displayContent;
-                } catch (error) {
-                    output.innerHTML = "<strong>Archivo FHIR inválido.</strong>";
-                }
-            };
-            reader.readAsText(fileInput.files[0]);
+        if (fileInput.files.length === 0) {
+            output.textContent = "Por favor cargue un recurso FHIR en formato JSON.";
+            return;
         }
 
-        function generateHumanReadableContent(resource) {
-            let content = "<strong>Narrativa generada:</strong><br>";
-            for (const [key, value] of Object.entries(resource)) {
-                if (value && typeof value !== 'object') {
-                    content += `<strong>${key}:</strong> ${value}<br>`;
-                } else if (Array.isArray(value)) {
-                    content += `<strong>${key}:</strong> [${value.map(item => JSON.stringify(item)).join(", ")}]<br>`;
-                } else if (typeof value === 'object' && value !== null) {
-                    content += `<strong>${key}:</strong> {${Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(", ")}}<br>`;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const resource = JSON.parse(event.target.result);
+                const resourceType = resource.resourceType || "Tipo de recurso desconocido";
+                let displayContent = `Tipo de recurso: ${resourceType}\n\n`;
+
+                const textDiv = resource.text?.div;
+                if (textDiv) {
+                    displayContent += textDiv;
+                } else {
+                    displayContent += generateIndentedContent(resource);
                 }
+
+                output.textContent = displayContent;
+            } catch (error) {
+                output.textContent = "Archivo FHIR inválido.";
             }
-            return content;
+        };
+        reader.readAsText(fileInput.files[0]);
+    }
+
+    function generateIndentedContent(resource, indent = "") {
+        let content = "";
+        for (const [key, value] of Object.entries(resource)) {
+            if (value && typeof value !== 'object') {
+                content += `${indent}${key}: ${value}\n`;
+            } else if (Array.isArray(value)) {
+                content += `${indent}${key}:\n`;
+                value.forEach(item => {
+                    content += generateIndentedContent(item, indent + "    ");
+                });
+            } else if (typeof value === 'object' && value !== null) {
+                content += `${indent}${key}:\n`;
+                content += generateIndentedContent(value, indent + "    ");
+            }
         }
-    </script>
+        return content;
+    }
+</script>
 </body>
 </html>
