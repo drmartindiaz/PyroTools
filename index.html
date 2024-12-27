@@ -8,32 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f8f9fa; /* Light gray background */
+            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
         .container {
             max-width: 800px;
             margin-top: 50px;
-            background: #ffffff; /* White background */
+            background: #ffffff;
             padding: 20px;
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         h1, h3 {
             text-align: center;
-            color: #007bff; /* Bootstrap primary color */
+            color: #007bff;
         }
         .output-container {
-            background: #f1f1f1; /* Light gray for output */
+            background: #f1f1f1;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-top: 20px;
             max-height: 400px;
-            overflow-y: auto; /* Scroll for large content */
+            overflow-y: auto;
         }
         .btn-primary {
-            width: 100%; /* Full-width button */
+            width: 100%;
             margin-top: 10px;
         }
         footer {
@@ -77,11 +77,8 @@
                     const textDiv = resource.text?.div;
                     if (textDiv) {
                         displayContent += textDiv;
-                    } else if (resource.resourceType === "Patient") {
-                        const patientName = resource.name?.[0]?.text || "Nombre no disponible";
-                        displayContent += `<strong>Nombre:</strong> ${patientName}`;
                     } else {
-                        displayContent += "No se encontró narrativa legible por humanos y no es un recurso de tipo Paciente.";
+                        displayContent += generateHumanReadableContent(resource);
                     }
 
                     output.innerHTML = displayContent;
@@ -90,6 +87,20 @@
                 }
             };
             reader.readAsText(fileInput.files[0]);
+        }
+
+        function generateHumanReadableContent(resource) {
+            let content = "<strong>Narrativa generada:</strong><br>";
+            for (const [key, value] of Object.entries(resource)) {
+                if (value && typeof value !== 'object') {
+                    content += `<strong>${key}:</strong> ${value}<br>`;
+                } else if (Array.isArray(value)) {
+                    content += `<strong>${key}:</strong> [${value.map(item => JSON.stringify(item)).join(", ")}]<br>`;
+                } else if (typeof value === 'object' && value !== null) {
+                    content += `<strong>${key}:</strong> {${Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(", ")}}<br>`;
+                }
+            }
+            return content;
         }
     </script>
 </body>
