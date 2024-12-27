@@ -27,8 +27,9 @@
             reader.onload = function(event) {
                 try {
                     const resource = JSON.parse(event.target.result);
+                    const resourceType = resource.resourceType || "Tipo de recurso desconocido";
+                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br>`;
                     const textDiv = resource.text?.div;
-                    output.innerHTML = `<strong>Tipo de Recurso:</strong> ${resource.resourceType}`;
                     if (textDiv) {
                         output.innerHTML = textDiv;
                     } else if (resource.resourceType === "Patient") {
