@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FHIR Resource Viewer</title>
+    <title>Generador de texto para recursos FHIR (FHIR Resource Text Generator)</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
@@ -47,15 +47,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>FHIR Resource Viewer 0.3</h1>
-        <h3>Human-Readable Narrative Generator</h3>
-        <p>Upload a FHIR resource (JSON format) to view its structure and narrative.</p>
+        <h1>Generador de texto para recursos FHIR 0.3.2</h1>
+        <h3>Generador de texto legible por humanos a partir de elementos de recursos FHIR</h3>
+        <p>Cargue un recurso FHIR (formato JSON) para ver su narrativa y estructura.</p>
         <input type="file" id="fileInput" class="form-control" accept=".json">
         <button class="btn btn-primary" onclick="renderFHIR()">Render</button>
         <div id="output" class="output-container"></div>
     </div>
     <footer>
-        &copy; 2024 FHIR Resource Viewer. All Rights Reserved.
+        &copy; 2024 Generador de texto para recursos FHIR. Todos los derechos reservados.
     </footer>
 
     <script>
@@ -64,7 +64,7 @@
             const output = document.getElementById('output');
 
             if (fileInput.files.length === 0) {
-                output.innerHTML = "<strong>Please upload a FHIR resource in JSON format.</strong>";
+                output.innerHTML = "<strong>Por favor, cargue un  recurso FHIR en formato JSON.</strong>";
                 return;
             }
 
@@ -72,8 +72,8 @@
             reader.onload = function(event) {
                 try {
                     const resource = JSON.parse(event.target.result);
-                    const resourceType = resource.resourceType || "Unknown Resource Type";
-                    let displayContent = `<strong>Resource Type:</strong> ${resourceType}<br><br>`;
+                    const resourceType = resource.resourceType || "Tipo de recurso desconocido.";
+                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br><br>`;
 
                     const textDiv = resource.text?.div;
                     if (textDiv) {
@@ -84,7 +84,7 @@
 
                     output.innerHTML = displayContent;
                 } catch (error) {
-                    output.innerHTML = "<strong>Invalid FHIR resource file.</strong>";
+                    output.innerHTML = "<strong>Archivo de recurso FHIR inválido.</strong>";
                 }
             };
             reader.readAsText(fileInput.files[0]);
