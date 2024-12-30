@@ -64,7 +64,7 @@
         const output = document.getElementById('output');
 
         if (fileInput.files.length === 0) {
-            output.textContent = "Por favor cargue un recurso FHIR en formato JSON.";
+            output.innerHTML = "Por favor cargue un recurso FHIR en formato JSON.";
             return;
         }
 
@@ -82,9 +82,9 @@
                     displayContent += generateIndentedContent(resource);
                 }
 
-                output.textContent = displayContent;
+                output.innerHTML = displayContent;
             } catch (error) {
-                output.textContent = "Archivo FHIR inválido.";
+                output.innerHTML = "Archivo FHIR inválido.";
             }
         };
         reader.readAsText(fileInput.files[0]);
