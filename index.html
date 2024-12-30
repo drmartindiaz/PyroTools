@@ -46,7 +46,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Visor de recursos FHIR 0.1</h1>
+        <h1>Visor de recursos FHIR 0.2</h1>
+        <h3>(FHIR Resource Viewer)</h3>
         <p>Cargue su recurso FHIR (formato JSON) para ver la narrativa legible por humanos.</p>
         <input type="file" id="fileInput" class="form-control" accept=".json">
         <button class="btn btn-primary" onclick="renderFHIR()">Render</button>
@@ -56,55 +57,51 @@
         &copy; 2024 Visor de recursos FHIR. Todos los derechos reservados.
     </footer>
 
-<script>
-    function renderFHIR() {
-        const fileInput = document.getElementById('fileInput');
-        const output = document.getElementById('output');
+    <script>
+        function renderFHIR() {
+            const fileInput = document.getElementById('fileInput');
+            const output = document.getElementById('output');
 
-        if (fileInput.files.length === 0) {
-            output.innerHTML = "Por favor cargue un recurso FHIR en formato JSON.";
-            return;
-        }
+            if (fileInput.files.length === 0) {
+                output.innerHTML = "<strong>Por favor cargue un recurso FHIR en formato JSON.</strong>";
+                return;
+            }
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            try {
-                const resource = JSON.parse(event.target.result);
-                const resourceType = resource.resourceType || "Tipo de recurso desconocido";
-                let displayContent = `Tipo de recurso: ${resourceType}\n\n`;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const resource = JSON.parse(event.target.result);
+                    const resourceType = resource.resourceType || "Tipo de recurso desconocido";
+                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br><br>`;
 
-                const textDiv = resource.text?.div;
-                if (textDiv) {
-                    displayContent += textDiv;
-                } else {
-                    displayContent += generateIndentedContent(resource);
+                    const textDiv = resource.text?.div;
+                    if (textDiv) {
+                        displayContent += textDiv;
+                    } else {
+                        displayContent += generateHumanReadableContent(resource);
+                    }
+
+                    output.innerHTML = displayContent;
+                } catch (error) {
+                    output.innerHTML = "<strong>Archivo FHIR inválido.</strong>";
                 }
-
-                output.innerHTML = displayContent;
-            } catch (error) {
-                output.innerHTML = "Archivo FHIR inválido.";
-            }
-        };
-        reader.readAsText(fileInput.files[0]);
-    }
-
-    function generateIndentedContent(resource, indent = "    ") {
-        let content = "";
-        for (const [key, value] of Object.entries(resource)) {
-            if (value && typeof value !== 'object') {
-                content += `${indent}${key}: ${value}\n`;
-            } else if (Array.isArray(value)) {
-                content += `${indent}${key}:\n`;
-                value.forEach(item => {
-                    content += generateIndentedContent(item, indent + "    ");
-                });
-            } else if (typeof value === 'object' && value !== null) {
-                content += `${indent}${key}:\n`;
-                content += generateIndentedContent(value, indent + "    ");
-            }
+            };
+            reader.readAsText(fileInput.files[0]);
         }
-        return content;
-    }
-</script>
+
+        function generateHumanReadableContent(resource) {
+            let content = "<strong>Narrativa generada:</strong><br>";
+            for (const [key, value] of Object.entries(resource)) {
+                if (value && typeof value !== 'object') {
+                    content += `<strong>${key}:</strong> ${value}<br>`;
+                } else if (Array.isArray(value)) {
+                    content += `<strong>${key}:</strong> [${value.map(item => JSON.stringify(item)).join(", ")}]<br>`;
+                } else if (typeof value === 'object' && value !== null) {
+                    content += `<strong>${key}:</strong> {${Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(", ")}}<br>`;
+                }
+            }
+            return content;
+        }
+    </script>
 </body>
 </html>
