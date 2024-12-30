@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de recursos FHIR (FHIR Resource Viewer)</title>
+    <title>FHIR Resource Viewer</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
@@ -31,6 +31,7 @@
             margin-top: 20px;
             max-height: 400px;
             overflow-y: auto;
+            font-family: monospace;
         }
         .btn-primary {
             width: 100%;
@@ -46,15 +47,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Visor de recursos FHIR 0.2</h1>
-        <h3>(FHIR Resource Viewer)</h3>
-        <p>Cargue su recurso FHIR (formato JSON) para ver la narrativa legible por humanos.</p>
+        <h1>FHIR Resource Viewer 0.3</h1>
+        <h3>Human-Readable Narrative Generator</h3>
+        <p>Upload a FHIR resource (JSON format) to view its structure and narrative.</p>
         <input type="file" id="fileInput" class="form-control" accept=".json">
         <button class="btn btn-primary" onclick="renderFHIR()">Render</button>
         <div id="output" class="output-container"></div>
     </div>
     <footer>
-        &copy; 2024 Visor de recursos FHIR. Todos los derechos reservados.
+        &copy; 2024 FHIR Resource Viewer. All Rights Reserved.
     </footer>
 
     <script>
@@ -63,7 +64,7 @@
             const output = document.getElementById('output');
 
             if (fileInput.files.length === 0) {
-                output.innerHTML = "<strong>Por favor cargue un recurso FHIR en formato JSON.</strong>";
+                output.innerHTML = "<strong>Please upload a FHIR resource in JSON format.</strong>";
                 return;
             }
 
@@ -71,33 +72,43 @@
             reader.onload = function(event) {
                 try {
                     const resource = JSON.parse(event.target.result);
-                    const resourceType = resource.resourceType || "Tipo de recurso desconocido";
-                    let displayContent = `<strong>Tipo de recurso:</strong> ${resourceType}<br><br>`;
+                    const resourceType = resource.resourceType || "Unknown Resource Type";
+                    let displayContent = `<strong>Resource Type:</strong> ${resourceType}<br><br>`;
 
                     const textDiv = resource.text?.div;
                     if (textDiv) {
                         displayContent += textDiv;
                     } else {
-                        displayContent += generateHumanReadableContent(resource);
+                        displayContent += formatResource(resource);
                     }
 
                     output.innerHTML = displayContent;
                 } catch (error) {
-                    output.innerHTML = "<strong>Archivo FHIR inválido.</strong>";
+                    output.innerHTML = "<strong>Invalid FHIR resource file.</strong>";
                 }
             };
             reader.readAsText(fileInput.files[0]);
         }
 
-        function generateHumanReadableContent(resource) {
-            let content = "<strong>Narrativa generada:</strong><br>";
+        function formatResource(resource, indentLevel = 0) {
+            let content = "";
+            const indent = "&nbsp;".repeat(indentLevel * 4); // 4 spaces per indent level
+
             for (const [key, value] of Object.entries(resource)) {
-                if (value && typeof value !== 'object') {
-                    content += `<strong>${key}:</strong> ${value}<br>`;
+                if (typeof value === "object" && !Array.isArray(value) && value !== null) {
+                    content += `${indent}<strong>${key}:</strong><br>`;
+                    content += formatResource(value, indentLevel + 1);
                 } else if (Array.isArray(value)) {
-                    content += `<strong>${key}:</strong> [${value.map(item => JSON.stringify(item)).join(", ")}]<br>`;
-                } else if (typeof value === 'object' && value !== null) {
-                    content += `<strong>${key}:</strong> {${Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(", ")}}<br>`;
+                    content += `${indent}<strong>${key}:</strong><br>`;
+                    for (const item of value) {
+                        if (typeof item === "object" && item !== null) {
+                            content += formatResource(item, indentLevel + 1);
+                        } else {
+                            content += `${indent}&nbsp;&nbsp;- ${item}<br>`;
+                        }
+                    }
+                } else {
+                    content += `${indent}<strong>${key}:</strong> ${value}<br>`;
                 }
             }
             return content;
