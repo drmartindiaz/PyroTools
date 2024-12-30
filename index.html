@@ -47,11 +47,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Generador de texto para recursos FHIR 0.3.2</h1>
+        <h1>Generador de texto para recursos FHIR 0.3.3</h1>
         <h3>Generador de texto legible por humanos a partir de elementos de recursos FHIR</h3>
         <p>Cargue un recurso FHIR (formato JSON) para ver su narrativa y estructura.</p>
         <input type="file" id="fileInput" class="form-control" accept=".json">
-        <button class="btn btn-primary" onclick="renderFHIR()">Render</button>
+        <button class="btn btn-primary" onclick="renderFHIR()">Render</button> 
+        <button class="btn btn-secondary" onclick="downloadNarrative()">Descargar Narrativa</button>
         <div id="output" class="output-container"></div>
     </div>
     <footer>
@@ -112,6 +113,14 @@
                 }
             }
             return content;
+        }
+        function downloadNarrative() {
+            const output = document.getElementById('output').innerHTML;
+            const blob = new Blob([output.replace(/<br>/g, '\n').replace(/&nbsp;/g, ' ')], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'fhir-resource-narrative.txt';
+            link.click();
         }
     </script>
 </body>
