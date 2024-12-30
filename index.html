@@ -39,7 +39,7 @@
             font-family: monospace;
         }
         .btn-primary {
-            width: 100%;
+            width: 50%;
             margin-top: 10px;
         }
         footer {
@@ -53,7 +53,7 @@
 <body>
     <div class="container">
         <h1>Generador de texto para recursos FHIR 0.3.5</h1>
-        <h4>Generador de texto legible por humanos a partir de elementos de recursos FHIR</h4>
+        <h3>Generador de texto legible por humanos a partir de elementos de recursos FHIR</h4>
         <p>Cargue un recurso FHIR (formato JSON) para ver su narrativa y estructura.</p>
         <input type="file" id="fileInput" class="form-control" accept=".json">
         <button class="btn btn-primary" onclick="renderFHIR()">Render</button><button class="btn btn-primary" onclick="downloadNarrative()">Descargar Narrativa</button>
